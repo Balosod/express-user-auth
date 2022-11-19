@@ -1,10 +1,12 @@
 const express = require('express');
-const User = require('../models/userModel');
+const {valid, User} = require('../models/userModel');
 const bcrypt = require('bcrypt');
 
 const router = express.Router();
 
 router.post('/sign-up',async (req,res)=>{
+    const { error } = valid(req.body); 
+    if (error) return res.status(400).send(error.details[0].message);
     try{
         const {email,password}=req.body
         let userExists = await User.findOne({email});

@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const {isEmail} = require('validator');
+const Joi = require('joi');
 
 
 const userSchema = mongoose.Schema({
@@ -22,5 +23,12 @@ const userSchema = mongoose.Schema({
         }
     }
 })
-
-module.exports  = mongoose.model('User', userSchema);
+function validateUser(data) {
+    const schema = Joi.object({
+        email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
+        password: Joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
+    });
+    return schema.validate(data);
+  }
+exports.valid = validateUser
+exports.User  = mongoose.model('User', userSchema);
